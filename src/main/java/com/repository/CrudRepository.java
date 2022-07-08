@@ -9,9 +9,9 @@ public interface CrudRepository {
 
     List<Auto> getAll();
 
-    boolean create(Auto auto);
+    boolean save(Auto auto);
 
-    boolean create(List<Auto> auto);
+    boolean saveAll(List<Auto> auto);
 
     boolean update(Auto auto);
 

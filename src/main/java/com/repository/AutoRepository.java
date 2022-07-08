@@ -2,6 +2,7 @@ package com.repository;
 
 import com.model.Auto;
 
+import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,13 +30,22 @@ public class AutoRepository implements CrudRepository {
     }
 
     @Override
-    public boolean create(Auto auto) {
+    public boolean save(Auto auto) {
+        if (auto == null) {
+            throw new IllegalArgumentException("Auto must not be null");
+        }
+        if (auto.getPrice().equals(BigDecimal.ZERO)) {
+            auto.setPrice(BigDecimal.valueOf(-1));
+        }
         autos.add(auto);
         return true;
     }
 
     @Override
-    public boolean create(List<Auto> auto) {
+    public boolean saveAll(List<Auto> auto) {
+        if (auto == null) {
+            return false;
+        }
         return autos.addAll(auto);
     }
 
@@ -47,6 +57,15 @@ public class AutoRepository implements CrudRepository {
             return true;
         }
         return false;
+    }
+
+    public boolean updateByBodyType(String bodyType, Auto copyFrom) {
+        for (Auto auto : autos) {
+            if (auto.getBodyType().equals(bodyType)) {
+                AutoCopy.copy(copyFrom, auto);
+            }
+        }
+        return true;
     }
 
     @Override
@@ -64,7 +83,6 @@ public class AutoRepository implements CrudRepository {
 
     private static class AutoCopy {
         static void copy(final Auto from, final Auto to) {
-            to.setManufacturer(from.getManufacturer());
             to.setModel(from.getModel());
             to.setBodyType(from.getBodyType());
             to.setPrice(from.getPrice());
