@@ -1,5 +1,5 @@
 package com.model;
 
 public enum Manufacturer {
-    KIA, BMW, ZAZ, OPEL
+    NON, KIA, BMW, ZAZ, OPEL
 }
