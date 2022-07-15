@@ -1,6 +1,7 @@
 package com.repository;
 
 import com.model.Auto;
+import com.model.Bus;
 
 import java.math.BigDecimal;
 import java.util.Iterator;
@@ -8,16 +9,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class AutoRepository implements CrudRepository<Auto> {
-    private final List<Auto> autos;
+public class BusRepository implements CrudRepository<Bus> {
+    private final List<Bus> autos;
 
-    public AutoRepository() {
+    public BusRepository() {
         autos = new LinkedList<>();
     }
 
     @Override
-    public Optional<Auto> findById(String id) {
-        for (Auto auto : autos) {
+    public Optional<Bus> findById(String id) {
+        for (Bus auto : autos) {
             if (auto.getId().equals(id)) {
                 return Optional.of(auto);
             }
@@ -26,12 +27,12 @@ public class AutoRepository implements CrudRepository<Auto> {
     }
 
     @Override
-    public List<Auto> getAll() {
+    public List<Bus> getAll() {
         return autos;
     }
 
     @Override
-    public boolean save(Auto auto) {
+    public boolean save(Bus auto) {
         if (auto == null) {
             throw new IllegalArgumentException("Auto must not be null");
         }
@@ -43,7 +44,7 @@ public class AutoRepository implements CrudRepository<Auto> {
     }
 
     @Override
-    public boolean saveAll(List<Auto> auto) {
+    public boolean saveAll(List<Bus> auto) {
         if (auto == null) {
             return false;
         }
@@ -51,29 +52,20 @@ public class AutoRepository implements CrudRepository<Auto> {
     }
 
     @Override
-    public boolean update(Auto auto) {
-        final Optional<Auto> optionalAuto = findById(auto.getId());
+    public boolean update(Bus auto) {
+        final Optional<Bus> optionalAuto = findById(auto.getId());
         if (optionalAuto.isPresent()) {
-            optionalAuto.ifPresent(founded -> AutoCopy.copy(auto, founded));
+            optionalAuto.ifPresent(founded -> BusCopy.copy(auto, founded));
             return true;
         }
         return false;
     }
 
-    public boolean updateByBodyType(String bodyType, Auto copyFrom) {
-        for (Auto auto : autos) {
-            if (auto.getBodyType().equals(bodyType)) {
-                AutoCopy.copy(copyFrom, auto);
-            }
-        }
-        return true;
-    }
-
     @Override
     public boolean delete(String id) {
-        final Iterator<Auto> iterator = autos.iterator();
+        final Iterator<Bus> iterator = autos.iterator();
         while (iterator.hasNext()) {
-            final Auto auto = iterator.next();
+            final Bus auto = iterator.next();
             if (auto.getId().equals(id)) {
                 iterator.remove();
                 return true;
@@ -82,10 +74,10 @@ public class AutoRepository implements CrudRepository<Auto> {
         return false;
     }
 
-    private static class AutoCopy {
-        static void copy(final Auto from, final Auto to) {
+    private static class BusCopy {
+        static void copy(final Bus from, final Bus to) {
             to.setModel(from.getModel());
-            to.setBodyType(from.getBodyType());
+            to.setCountPeople(from.getCountPeople());
             to.setPrice(from.getPrice());
         }
     }

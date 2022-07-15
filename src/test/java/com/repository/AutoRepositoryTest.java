@@ -25,7 +25,7 @@ class AutoRepositoryTest {
     }
 
     private Auto createSimpleAuto() {
-        return new Auto("Model", Manufacturer.BMW, BigDecimal.ZERO, "Type");
+        return new Auto("Model", Manufacturer.BMW, BigDecimal.ZERO, "Type", 1);
     }
 
     @Test

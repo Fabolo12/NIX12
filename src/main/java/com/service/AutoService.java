@@ -26,13 +26,65 @@ public class AutoService {
                     "Model-" + RANDOM.nextInt(1000),
                     getRandomManufacturer(),
                     BigDecimal.valueOf(RANDOM.nextDouble(1000.0)),
-                    "Model-" + RANDOM.nextInt(1000)
+                    "Model-" + RANDOM.nextInt(1000),
+                    100
             );
             result.add(auto);
             autoRepository.save(auto);
             LOGGER.debug("Created auto {}", auto.getId());
         }
         return result;
+    }
+
+    public void save(Auto auto) {
+        autoRepository.save(auto);
+    }
+
+    public void getTotalSumOf(String id) {
+        autoRepository.findById(id).ifPresent(auto -> {
+            final int count = auto.getCount();
+            final BigDecimal price = auto.getPrice();
+            final int totalSum = count * price.intValue();
+            System.out.printf("Auto %s has total sum %d%n", auto.getModel(), totalSum);
+        });
+    }
+
+    public Auto getOrCreat(String id) {
+        final Auto auto = autoRepository.findById(id).orElse(cretaOne());
+        autoRepository.save(auto);
+        return auto;
+    }
+
+    private Auto cretaOne() {
+        return new Auto("Model", Manufacturer.KIA, BigDecimal.valueOf(1000.0), "Model", 100);
+    }
+
+    public Auto getOrCreatWithTotalSum(String id) {
+        final Auto auto = autoRepository.findById(id).orElseGet(() -> {
+            final List<Auto> all = autoRepository.getAll();
+            BigDecimal totalSum = BigDecimal.ZERO;
+            for (Auto a : all) {
+                totalSum = totalSum.add(a.getPrice());
+            }
+            final Auto cretaOne = cretaOne();
+            cretaOne.setPrice(totalSum);
+            return cretaOne;
+        });
+        autoRepository.save(auto);
+        return auto;
+    }
+
+    public boolean update(Auto auto) {
+        if (auto.getPrice().equals(BigDecimal.ZERO)) {
+            auto.setPrice(BigDecimal.valueOf(-1));
+        }
+        if (auto.getManufacturer() == null) {
+            throw new IllegalArgumentException();
+        }
+        if (auto.getBodyType().equals("")) {
+            auto = autoRepository.findById(auto.getId()).orElseThrow(IllegalArgumentException::new);
+        }
+        return autoRepository.update(auto);
     }
 
     private Manufacturer getRandomManufacturer() {
@@ -53,159 +105,5 @@ public class AutoService {
 
     public Optional<Auto> findOneById(String id) {
         return id == null ? autoRepository.findById("") : autoRepository.findById(id);
-    }
-
-    public void optionalExmaples() {
-        final Auto auto = createAndSaveAutos(1).get(0);
-        final String id = auto.getId();
-
-//        simpleCheck(id);
-        isPresent(id);
-        ifPresent(id);
-        orElse(id);
-        orElseThrow(id);
-        or(id);
-        orElseGet(id);
-        filter(id);
-        map(id);
-        ifPresentOrElse(id);
-    }
-
-    /*private void simpleCheck(String id) { EXAMPLE
-        final Auto auto = autoRepository.getById(id);
-        if (auto != null) {
-            System.out.println(auto.getModel());
-        }
-    }*/
-
-    private void isPresent(String id) {
-        final Optional<Auto> autoOptional1 = autoRepository.findById(id);
-        if (autoOptional1.isPresent()) {
-            System.out.println(autoOptional1.get().getModel());
-        }
-
-        final Optional<Auto> autoOptional2 = autoRepository.findById("123");
-        if (autoOptional2.isPresent()) {
-            System.out.println(autoOptional2.get().getModel());
-        }
-
-        if (autoOptional2.isEmpty()) {
-            System.out.println("Auto with id \"123\" not found");
-        }
-    }
-
-    private void ifPresent(String id) {
-        autoRepository.findById(id).ifPresent(auto -> {
-            System.out.println(auto.getModel());
-        });
-
-        autoRepository.findById("123").ifPresent(auto -> {
-            System.out.println(auto.getModel());
-        });
-    }
-
-    private void orElse(String id) {
-        final Auto auto1 = autoRepository.findById(id).orElse(cretaOne());
-        System.out.println(auto1.getModel());
-
-        System.out.println("~".repeat(10));
-
-        final Auto auto2 = autoRepository.findById("123").orElse(cretaOne());
-        System.out.println(auto2.getModel());
-    }
-
-    private void orElseThrow(String id) {
-        final Auto auto1 = autoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Cannot find auto with id " + id));
-        System.out.println(auto1.getModel());
-
-        System.out.println("~".repeat(10));
-
-        try {
-            final Auto auto2 = autoRepository.findById("123")
-                    .orElseThrow(() -> new IllegalArgumentException("Cannot find auto with id " + "123"));
-            System.out.println(auto2.getModel());
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    private void or(String id) {
-        final Optional<Auto> auto1 = autoRepository.findById(id).or(() -> Optional.of(cretaOne()));
-        auto1.ifPresent(auto -> {
-            System.out.println(auto.getModel());
-        });
-
-        System.out.println("~".repeat(10));
-
-        final Optional<Auto> auto2 = autoRepository.findById("123").or(() -> Optional.of(cretaOne()));
-        auto2.ifPresent(auto -> {
-            System.out.println(auto.getModel());
-        });
-    }
-
-    private void orElseGet(String id) {
-        final Auto auto = autoRepository.findById(id).orElse(cretaOne());
-        final Auto auto1 = autoRepository.findById(id).orElseGet(() -> cretaOne());
-        System.out.println(auto1.getModel());
-
-        System.out.println("~".repeat(10));
-
-        final Auto auto2 = autoRepository.findById("123").orElseGet(() -> {
-            System.out.println("Cannot find auto with id " + "123");
-            return cretaOne();
-        });
-        System.out.println(auto2.getModel());
-    }
-
-    private void filter(String id) {
-        autoRepository.findById(id)
-                .filter(auto -> !auto.getBodyType().equals(""))
-                .ifPresent(auto -> {
-                    System.out.println(auto.getModel());
-                });
-
-        autoRepository.findById(id)
-                .filter(auto -> auto.getBodyType().equals(""))
-                .ifPresent(auto -> {
-                    System.out.println(auto.getModel());
-                });
-    }
-
-    private void map(String id) {
-        autoRepository.findById(id)
-                .map(auto -> auto.getModel())
-                .ifPresent(model -> {
-                    System.out.println(model);
-                });
-    }
-
-    private void ifPresentOrElse(String id) {
-        autoRepository.findById(id).ifPresentOrElse(
-                auto -> {
-                    System.out.println(auto.getModel());
-                },
-                () -> {
-                    System.out.println("Cannot find auto with id " + "123");
-                }
-        );
-
-        autoRepository.findById("123").ifPresentOrElse(
-                auto -> {
-                    System.out.println(auto.getModel());
-                },
-                () -> {
-                    System.out.println("Cannot find auto with id " + "123");
-                }
-        );
-    }
-
-    private Auto cretaOne() {
-        return new Auto(
-                "Model new",
-                getRandomManufacturer(),
-                BigDecimal.valueOf(RANDOM.nextDouble(1000.0)),
-                "Model-" + RANDOM.nextInt(1000)
-        );
     }
 }
