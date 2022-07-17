@@ -1,6 +1,6 @@
 package com.repository;
 
-import com.model.Auto;
+import com.model.vehicle.Auto;
 
 import java.math.BigDecimal;
 import java.util.Iterator;

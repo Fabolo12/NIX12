@@ -1,7 +1,7 @@
 package com.service;
 
-import com.model.Auto;
-import com.model.Manufacturer;
+import com.model.vehicle.Auto;
+import com.model.vehicle.Manufacturer;
 import com.repository.AutoRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,30 +25,6 @@ class AutoServiceTest {
     void setUp() {
         autoRepository = Mockito.mock(AutoRepository.class);
         target = new AutoService(autoRepository);
-    }
-
-    @Test
-    void createAutos_negativeCount() {
-        final List<Auto> actual = target.createAndSaveAutos(-1);
-        Assertions.assertEquals(0, actual.size());
-    }
-
-    @Test
-    void createAutos_zeroCount() {
-        final List<Auto> actual = target.createAndSaveAutos(0);
-        Assertions.assertEquals(0, actual.size());
-    }
-
-    @Test
-    void createAutos() {
-        final List<Auto> actual = target.createAndSaveAutos(5);
-        Assertions.assertEquals(5, actual.size());
-        Mockito.verify(autoRepository, Mockito.times(5))
-                .save(Mockito.any());
-    }
-
-    @Test
-    void saveAutos() {
     }
 
     @Test
@@ -77,32 +53,6 @@ class AutoServiceTest {
         target.findOneById(null);
         Mockito.verify(autoRepository).findById(captor.capture());
         Assertions.assertEquals("", captor.getValue());
-    }
-
-    @Test
-    void update_success() {
-        final Auto simpleAuto = createSimpleAuto();
-        simpleAuto.setPrice(BigDecimal.TEN);
-        target.update(simpleAuto);
-
-        Mockito.when(autoRepository.findById(Mockito.anyString())).thenThrow(RuntimeException.class);
-        Mockito.verify(autoRepository).update(argThat(new ArgumentMatcher<>() {
-            @Override
-            public boolean matches(Auto auto) {
-                return simpleAuto.getId().equals(auto.getId()) &&
-                        simpleAuto.getPrice().equals(auto.getPrice());
-            }
-        }));
-    }
-
-    @Test
-    void update_bodyTypeEmpty_hasOne() {
-        final Auto simpleAuto = createSimpleAuto();
-        simpleAuto.setBodyType("");
-        Mockito.when(autoRepository.findById(simpleAuto.getId())).thenReturn(Optional.of(simpleAuto));
-
-        final boolean actual = target.update(simpleAuto);
-        Mockito.verify(autoRepository).update(simpleAuto);
     }
 
     @Test

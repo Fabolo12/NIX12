@@ -1,7 +1,7 @@
 package com.service;
 
-import com.model.Auto;
-import com.model.Manufacturer;
+import com.model.vehicle.Auto;
+import com.model.vehicle.Manufacturer;
 import com.repository.AutoRepository;
 
 import java.math.BigDecimal;

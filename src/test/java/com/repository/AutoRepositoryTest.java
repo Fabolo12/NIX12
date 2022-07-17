@@ -1,7 +1,7 @@
 package com.repository;
 
-import com.model.Auto;
-import com.model.Manufacturer;
+import com.model.vehicle.Auto;
+import com.model.vehicle.Manufacturer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

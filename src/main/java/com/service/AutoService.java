@@ -1,7 +1,7 @@
 package com.service;
 
-import com.model.Auto;
-import com.model.Manufacturer;
+import com.model.vehicle.Auto;
+import com.model.vehicle.Manufacturer;
 import com.repository.AutoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class AutoService {
         List<Auto> result = new LinkedList<>();
         for (int i = 0; i < count; i++) {
             final Auto auto = new Auto(
-                    "Model-" + RANDOM.nextInt(1000),
+                    Auto.class.getSimpleName() + RANDOM.nextInt(1000),
                     getRandomManufacturer(),
                     BigDecimal.valueOf(RANDOM.nextDouble(1000.0)),
                     "Model-" + RANDOM.nextInt(1000),

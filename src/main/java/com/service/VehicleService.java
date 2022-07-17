@@ -1,7 +1,7 @@
 package com.service;
 
-import com.model.Manufacturer;
-import com.model.Vehicle;
+import com.model.vehicle.Manufacturer;
+import com.model.vehicle.Vehicle;
 import com.repository.CrudRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +51,10 @@ public abstract class VehicleService<T extends Vehicle> {
     public boolean update(T vehicle) {
         if (vehicle.getPrice().equals(BigDecimal.ZERO)) {
             vehicle.setPrice(BigDecimal.valueOf(-1));
+        }
+        if (vehicle.getModel().equals("")) {
+            vehicle = repository.findById(vehicle.getId())
+                    .orElseThrow(IllegalArgumentException::new);
         }
         if (vehicle.getManufacturer() == null) {
             throw new IllegalArgumentException();
